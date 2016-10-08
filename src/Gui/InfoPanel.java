@@ -1,0 +1,104 @@
+package Gui;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+
+import Character.Character;
+import Character.Enemy;
+import Character.Hero;
+
+public class InfoPanel extends JPanel{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Enemy enemy;
+	private Enemy mouseEnemy;
+	private Hero hero;
+	private String playerName;
+	private JProgressBar hp;
+	private JProgressBar exp;
+	
+	public InfoPanel(int width,int height,Color color,Hero h, String name){
+		setBackground(color);
+		setSize(width, height);
+		this.hero=h;
+		this.playerName=name;
+		setLayout(null);
+		hp=new JProgressBar(0,hero.getLifeMax());
+		exp=new JProgressBar(0,Hero.levelStep*hero.getLevel());
+		hp.setValue(hero.getLife());
+		exp.setValue(hero.getExp());
+		hp.setStringPainted(true);
+		exp.setStringPainted(true);
+		hp.setBounds(80,23,100,15);
+		exp.setBounds(80,83,100,15);
+		this.add(hp);
+		this.add(exp);
+		hp.setForeground(Color.RED);
+		exp.setForeground(Color.GREEN);
+	}
+	
+	public void refreshBars()
+	{
+		if(hero.getLevel()==Character.levelMax){
+			exp.setVisible(false);
+		}
+		hp.setMaximum(hero.getLifeMax());
+		exp.setMaximum(Hero.levelStep*hero.getLevel());
+		hp.setValue(hero.getLife());
+		exp.setValue(hero.getExp());
+		hp.setString(hero.getLife() + "/" + hero.getLifeMax());
+		exp.setString(hero.getExp() + "/" + hero.getLevel()*Hero.levelStep);
+		
+	}
+	
+	public void refresh(Enemy e){
+		if(e==null){
+			enemy=mouseEnemy;
+		}
+		else{
+			enemy = e;
+		}
+		refreshBars();
+		repaint();
+	}
+	
+	public void refreshMouse(Enemy e){
+		this.mouseEnemy = e;
+		this.enemy = e;
+		repaint();
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		final int fontSize=13;
+		Font plain=new Font("Arial",Font.PLAIN,fontSize);
+		Font bold=new Font("Arial",Font.BOLD,fontSize);
+		g.setFont(bold);
+		g.drawString(playerName, 10, 15);
+		g.setFont(plain);
+		g.drawString("Health: ",10,35);
+		g.drawString("Strengh: "+hero.getStr(),10,55);
+		g.drawString("Level: "+hero.getLevel(),10,75);
+		if(hero.getLevel()!=Character.levelMax){
+			g.drawString("Experience: ",10,95);
+		}
+		
+		if(enemy!=null){
+			String enemyName = enemy.getClass().getName();
+			g.setFont(bold);
+			g.drawString(enemyName.substring(enemyName.indexOf('.')+1), 10, 125);
+			g.setFont(plain);
+			g.drawString("Health: "+enemy.getLife()+"/"+enemy.getLifeMax(),10,145);
+			g.drawString("Strengh: "+enemy.getStr(),10,165);
+			g.drawString("Level: "+enemy.getLevel(),10,185);
+
+		}
+	}
+}
